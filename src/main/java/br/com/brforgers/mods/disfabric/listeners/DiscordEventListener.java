@@ -10,7 +10,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Objects;
 
 public class DiscordEventListener extends ListenerAdapter {
 
-    public void onMessageReceived(@NotNull MessageReceivedEvent e) {
+    public void onMessageReceived(MessageReceivedEvent e) {
         Object gameInstance = FabricLoader.getInstance().getGameInstance();
         MinecraftServer server = null;
         if (gameInstance instanceof MinecraftServer) {
@@ -60,7 +59,7 @@ public class DiscordEventListener extends ListenerAdapter {
                 e.getChannel().sendMessage(help).queue();
 
             }else {
-                server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText(Utils.getTextFormattingByColor(Objects.requireNonNull(e.getMember()).getColor()) + "[Discord]" + Formatting.RESET + " <" + e.getMember().getEffectiveName() + "> " + e.getMessage().getContentDisplay() + ((e.getMessage().getAttachments().size() > 0) ? "<att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? "<embed>" : "")),false));
+                server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> {serverPlayerEntity.sendMessage(new LiteralText(Utils.getTextFormattingByColor(Objects.requireNonNull(e.getMember()).getColor()) + "[Discord]" + Formatting.RESET + " <" + e.getMember().getEffectiveName() + "> " + e.getMessage().getContentDisplay() + ((e.getMessage().getAttachments().size() > 0) ? "<att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? "<embed>" : "")),false);});
             }
         }
 

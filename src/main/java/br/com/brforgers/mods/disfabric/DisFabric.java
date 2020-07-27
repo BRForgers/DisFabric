@@ -1,13 +1,17 @@
 package br.com.brforgers.mods.disfabric;
 
+import br.com.brforgers.mods.disfabric.commands.ShrugCommand;
 import br.com.brforgers.mods.disfabric.listeners.DiscordEventListener;
 import br.com.brforgers.mods.disfabric.listeners.MinecraftEventListener;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +54,11 @@ public class DisFabric implements DedicatedServerModInitializer {
             if(jda != null) {
                 Objects.requireNonNull(DisFabric.jda.getTextChannelById(config.channelId)).sendMessage("**Server stopped!**").queue();
                 DisFabric.jda.shutdown();
+            }
+        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+            if (dedicated) {
+                ShrugCommand.register(dispatcher);
             }
         });
         new MinecraftEventListener().init();

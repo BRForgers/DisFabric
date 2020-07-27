@@ -23,7 +23,7 @@ public class MinecraftEventListener {
             }
             JSONObject newComponent = new JSONObject(LiteralText.Serializer.toJson(message));
             DisFabric.logger.warn(newComponent.toString());
-            newComponent.getJSONArray("with").getJSONObject(1).put("text", convertedPair.getRight());
+            newComponent.getJSONArray("with").put(1, convertedPair.getRight());
             DisFabric.logger.warn(newComponent.toString());
             return LiteralText.Serializer.fromJson(newComponent.toString());
         });

@@ -50,7 +50,7 @@ public class DisFabric implements DedicatedServerModInitializer {
                 Objects.requireNonNull(DisFabric.jda.getTextChannelById(config.channelId)).sendMessage("**Server started!**").queue();
             }
         });
-        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
+        ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
             if(jda != null) {
                 Objects.requireNonNull(DisFabric.jda.getTextChannelById(config.channelId)).sendMessage("**Server stopped!**").queue();
                 DisFabric.jda.shutdown();

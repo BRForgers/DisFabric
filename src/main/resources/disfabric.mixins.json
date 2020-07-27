@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "br.com.brforgers.mods.disfabric.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinPlayerAdvancementTracker",
+    "MixinPlayerManager",
+    "MixinServerPlayerEntity",
+    "MixinServerPlayNetworkHandler"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

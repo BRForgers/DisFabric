@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "disfabric",
+  "version": "${version}",
+
+  "name": "Example Mod",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "environment": "*",
+  "entrypoints": {
+    "server": [
+      "br.com.brforgers.mods.disfabric.DisFabric"
+    ]
+  },
+  "mixins": [
+    "disfabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.8.7",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

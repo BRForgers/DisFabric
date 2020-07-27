@@ -3,17 +3,19 @@
   "id": "disfabric",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "DisFabric",
+  "description": "A barebones Discord <-> Minecraft chat bridge.",
   "authors": [
-    "Me!"
+    "armelin1",
+    "D4rkness_King",
+    "jonatsp"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/BRForgers/DisFabric",
+    "sources": "https://github.com/BRForgers/DisFabric"
   },
 
-  "environment": "*",
+  "environment": "server",
   "entrypoints": {
     "server": [
       "br.com.brforgers.mods.disfabric.DisFabric"
@@ -26,8 +28,5 @@
     "fabricloader": ">=0.8.7",
     "fabric": "*",
     "minecraft": "1.16.x"
-  },
-  "suggests": {
-    "flamingo": "*"
   }
 }

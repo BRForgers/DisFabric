@@ -14,4 +14,6 @@ public class Configuration implements ConfigData {
     public String[] adminsIds = {""};
     @ConfigEntry.Category(value = "Discord")
     public String channelId = "";
+    @ConfigEntry.Category(value = "Discord")
+    public boolean membersIntents = false;
 }

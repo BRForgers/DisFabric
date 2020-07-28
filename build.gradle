@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.4-SNAPSHOT'
     id 'maven-publish'
+    id 'project-report'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -26,16 +27,32 @@ dependencies {
 
     modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modCompile "net.dv8tion:JDA:4.2.0_182"
-    modApi "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
-    modApi "me.shedaniel.cloth:config-2:4.6.0"
-    modCompile "com.mashape.unirest:unirest-java:1.4.9"
+    include(modCompile ("net.dv8tion:JDA:4.2.0_182") {
+        exclude module: 'opus-java'
+    })
+    include(modApi("me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"))
+    include(modApi("me.shedaniel.cloth:config-2:4.6.0"))
+    include(modCompile("com.mashape.unirest:unirest-java:1.4.9"))
 
-    include "net.dv8tion:JDA:4.2.0_182"
-    include "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
-    include "me.shedaniel.cloth:config-2:4.6.0"
-    include "com.mashape.unirest:unirest-java:1.4.9"
-
+    include group: 'org.json', name: 'json', version: '20160212'
+    include group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.2'
+    include group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.1'
+    include group: 'org.apache.httpcomponents', name: 'httpcore-nio', version: '4.4.4'
+    include group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.4'
+    include group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.1'
+    include "com.fasterxml.jackson.core:jackson-databind:2.10.1"
+    include "net.sf.trove4j:trove4j:3.0.3"
+    include "org.apache.commons:commons-collections4:4.1"
+    include "com.google.code.findbugs:jsr305:3.0.2"
+    include "org.jetbrains:annotations:16.0.1"
+    include "org.slf4j:slf4j-api:1.7.25"
+    include "com.neovisionaries:nv-websocket-client:2.10"
+    include "com.squareup.okhttp3:okhttp:3.13.0"
+    include "commons-logging:commons-logging:1.2"
+    include "commons-codec:commons-codec:1.9"
+    include "com.fasterxml.jackson.core:jackson-annotations:2.10.1"
+    include "com.fasterxml.jackson.core:jackson-core:2.10.1"
+    include "com.squareup.okio:okio:1.17.2"
 
 }
 

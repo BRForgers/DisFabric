@@ -29,7 +29,7 @@ public class MinecraftEventListener {
         });
 
         PlayerAdvancementCallback.EVENT.register((playerEntity, advancement) -> {
-            if(advancement.getDisplay() != null) {
+            if(advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat() && playerEntity.getAdvancementTracker().getProgress(advancement).isDone()) {
                 DisFabric.textChannel.sendMessage(playerEntity.getEntityName()+" has made the advancement **["+advancement.getDisplay().getTitle().getString()+"]**").queue();
             }
         });

@@ -3,13 +3,13 @@ package br.com.brforgers.mods.disfabric;
 import br.com.brforgers.mods.disfabric.commands.ShrugCommand;
 import br.com.brforgers.mods.disfabric.listeners.DiscordEventListener;
 import br.com.brforgers.mods.disfabric.listeners.MinecraftEventListener;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -33,7 +33,9 @@ public class DisFabric implements DedicatedServerModInitializer {
         logger.info("DisFabric >>>>>>>>>>>>>>>>>>>>>>>>> All others discord integrations mods");
         config = AutoConfig.getConfigHolder(Configuration.class).getConfig();
         try {
-            DisFabric.jda = JDABuilder.createLight(config.botToken)
+            DisFabric.jda = JDABuilder.createDefault(config.botToken)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .addEventListeners(new DiscordEventListener())
                     .build();
             DisFabric.jda.awaitReady();
@@ -54,6 +56,11 @@ public class DisFabric implements DedicatedServerModInitializer {
             if(jda != null) {
                 Objects.requireNonNull(DisFabric.jda.getTextChannelById(config.channelId)).sendMessage("**Server stopped!**").queue();
                 DisFabric.jda.shutdown();
+            }
+        });
+        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
+            if(jda != null) {
+                DisFabric.jda.shutdownNow();
             }
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

@@ -8,6 +8,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,7 +61,11 @@ public class DiscordEventListener extends ListenerAdapter {
                 e.getChannel().sendMessage(help).queue();
 
             }else {
-                server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText(Utils.getTextFormattingByColor(Objects.requireNonNull(e.getMember()).getColor()) + "[Discord]" + Formatting.RESET + " <" + e.getMember().getEffectiveName() + "> " + e.getMessage().getContentDisplay() + ((e.getMessage().getAttachments().size() > 0) ? "<att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? "<embed>" : "")),false));
+                LiteralText discord = new LiteralText("[Discord] ");
+                discord.setStyle(discord.getStyle().withColor(TextColor.fromRgb(Objects.requireNonNull(e.getMember()).getColorRaw())));
+                LiteralText msg = new LiteralText(" <" + e.getMember().getEffectiveName() + "> " + e.getMessage().getContentDisplay() + ((e.getMessage().getAttachments().size() > 0) ? "<att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? "<embed>" : ""));
+                msg.setStyle(msg.getStyle().withColor(TextColor.fromFormatting(Formatting.WHITE)));
+                server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText("").append(discord).append(msg),false));
             }
         }
 

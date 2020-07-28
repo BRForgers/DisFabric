@@ -33,11 +33,17 @@ public class DisFabric implements DedicatedServerModInitializer {
         logger.info("DisFabric >>>>>>>>>>>>>>>>>>>>>>>>> All others discord integrations mods");
         config = AutoConfig.getConfigHolder(Configuration.class).getConfig();
         try {
-            DisFabric.jda = JDABuilder.createDefault(config.botToken)
+            if(config.membersIntents){
+                DisFabric.jda = JDABuilder.createDefault(config.botToken)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .addEventListeners(new DiscordEventListener())
                     .build();
+            } else {
+                DisFabric.jda = JDABuilder.createDefault(config.botToken)
+                    .addEventListeners(new DiscordEventListener())
+                    .build();
+            }
             DisFabric.jda.awaitReady();
             DisFabric.textChannel = DisFabric.jda.getTextChannelById(config.channelId);
         } catch (LoginException ex) {

@@ -1,10 +1,11 @@
-package br.com.brforgers.mods.disfabric;
+package br.com.brforgers.mods.disfabric.utils;
 
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import br.com.brforgers.mods.disfabric.DisFabric;
 import net.dv8tion.jda.api.entities.Member;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;

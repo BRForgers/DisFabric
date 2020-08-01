@@ -1,8 +1,9 @@
 package br.com.brforgers.mods.disfabric.listeners;
 
 import br.com.brforgers.mods.disfabric.DisFabric;
-import br.com.brforgers.mods.disfabric.Utils;
+import br.com.brforgers.mods.disfabric.utils.Utils;
 import br.com.brforgers.mods.disfabric.events.*;
+import br.com.brforgers.mods.disfabric.utils.MarkdownParser;
 import com.mashape.unirest.http.Unirest;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Pair;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 public class MinecraftEventListener {
     public void init() {
         ServerChatCallback.EVENT.register((playerEntity, rawMessage, message) -> {
+
             Pair<String, String> convertedPair = Utils.convertMentionsFromNames(rawMessage);
             if(DisFabric.config.isWebhookEnabled) {
                 JSONObject body = new JSONObject();
@@ -27,7 +29,7 @@ public class MinecraftEventListener {
             }
             JSONObject newComponent = new JSONObject(LiteralText.Serializer.toJson(message));
             newComponent.getJSONArray("with").put(1, convertedPair.getRight());
-            return LiteralText.Serializer.fromJson(newComponent.toString());
+            return LiteralText.Serializer.fromJson(MarkdownParser.parseMarkdown(newComponent.toString()));
         });
 
         PlayerAdvancementCallback.EVENT.register((playerEntity, advancement) -> {

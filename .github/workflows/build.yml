@@ -12,7 +12,9 @@ jobs:
     - name: Build
       run: |
           chmod +x ./gradlew
+          chmod +x ./curse_upload
           ./gradlew build
+          ./curse_upload
     - uses: actions/upload-artifact@v2
       with:
         name: build-artifacts

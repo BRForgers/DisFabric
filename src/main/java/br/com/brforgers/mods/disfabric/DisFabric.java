@@ -4,7 +4,7 @@ import br.com.brforgers.mods.disfabric.commands.ShrugCommand;
 import br.com.brforgers.mods.disfabric.listeners.DiscordEventListener;
 import br.com.brforgers.mods.disfabric.listeners.MinecraftEventListener;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
-import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
+import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.security.auth.login.LoginException;
-import java.util.Objects;
+
 
 public class DisFabric implements DedicatedServerModInitializer {
 
@@ -29,7 +29,7 @@ public class DisFabric implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        AutoConfig.register(Configuration.class, GsonConfigSerializer::new);
+        AutoConfig.register(Configuration.class, JanksonConfigSerializer::new);
         logger.info("DisFabric >>>>>>>>>>>>>>>>>>>>>>>>> All others discord integrations mods");
         config = AutoConfig.getConfigHolder(Configuration.class).getConfig();
         try {
@@ -53,27 +53,19 @@ public class DisFabric implements DedicatedServerModInitializer {
             jda = null;
             DisFabric.logger.error(ex);
         }
-        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-            if(jda != null) {
-                Objects.requireNonNull(DisFabric.jda.getTextChannelById(config.channelId)).sendMessage("**Server started!**").queue();
-            }
-        });
-        ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
-            if(jda != null) {
-                Objects.requireNonNull(DisFabric.jda.getTextChannelById(config.channelId)).sendMessage("**Server stopped!**").queue();
+        if(jda != null) {
+            ServerLifecycleEvents.SERVER_STARTED.register((server) -> textChannel.sendMessage(DisFabric.config.texts.serverStarted).queue());
+            ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
+                textChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();
                 DisFabric.jda.shutdown();
-            }
-        });
-        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
-            if(jda != null) {
-                DisFabric.jda.shutdownNow();
-            }
-        });
+            });
+            ServerLifecycleEvents.SERVER_STOPPED.register((server) -> DisFabric.jda.shutdownNow());
+            new MinecraftEventListener().init();
+        }
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             if (dedicated) {
                 ShrugCommand.register(dispatcher);
             }
         });
-        new MinecraftEventListener().init();
     }
 }

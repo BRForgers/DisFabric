@@ -25,6 +25,6 @@ public class DiscordCommandOutput implements CommandOutput {
 
     @Override
     public boolean shouldBroadcastConsoleToOps() {
-        return false;
+        return true;
     }
 }

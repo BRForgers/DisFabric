@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public class DiscordEventListener extends ListenerAdapter {
                 e.getChannel().sendMessage(playerList.toString()).queue();
 
             } else if (e.getMessage().getContentRaw().startsWith("!tps")) {
-                StringBuilder tpss = new StringBuilder("```\n============= TPS per loaded dimension ==============\n");
+                StringBuilder tpss = new StringBuilder("```\n============== TPS per loaded dimension ==============\n");
 //                for (Integer id : server.DimensionManager.getIDs()) {
 //                    double worldTickTime = Utils.mean(server.tick.worldTickTimes.get(id)) * 1.0E-6D;
 //                    double worldTPS = Math.min(1000.0 / worldTickTime, 20);
@@ -48,22 +49,22 @@ public class DiscordEventListener extends ListenerAdapter {
 //                }
                 tpss.append("//TODO\n");
                 tpss.append("Server TPS: ");
-                double serverTickTime = Utils.mean(server.lastTickLengths) * 1.0E-6D;
+                double serverTickTime = MathHelper.average(server.lastTickLengths) * 1.0E-6D;
                 tpss.append(Math.min(1000.0 / serverTickTime, 20));
                 tpss.append("```");
                 e.getChannel().sendMessage(tpss.toString()).queue();
 
             } else if(e.getMessage().getContentRaw().startsWith("!help")){
-                String help = "```\n" + "=============== Commands ==============\n" +
+                String help = "```\n" + "=============== Commands ===============\n" +
                         "\n" + "!online: list server online players" +
                         "\n" + "!tps: shows loaded dimensions tps´s" +
                         "\n" + "!console <command>: executes commands in the server console (admins only)\n```";
                 e.getChannel().sendMessage(help).queue();
 
             } else {
-                LiteralText discord = new LiteralText("[Discord] ");
+                LiteralText discord = new LiteralText(DisFabric.config.texts.coloredText.replace("%discordname%", Objects.requireNonNull(e.getMember()).getEffectiveName()).replace("%message%",e.getMessage().getContentDisplay() + ((e.getMessage().getAttachments().size() > 0) ? " <att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? " <embed>" : "")));
                 discord.setStyle(discord.getStyle().withColor(TextColor.fromRgb(Objects.requireNonNull(e.getMember()).getColorRaw())));
-                LiteralText msg = new LiteralText(" <" + e.getMember().getEffectiveName() + "> " + e.getMessage().getContentDisplay() + ((e.getMessage().getAttachments().size() > 0) ? "<att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? "<embed>" : ""));
+                LiteralText msg = new LiteralText(DisFabric.config.texts.colorlessText.replace("%discordname%", Objects.requireNonNull(e.getMember()).getEffectiveName()).replace("%message%",e.getMessage().getContentDisplay() + ((e.getMessage().getAttachments().size() > 0) ? " <att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? " <embed>" : "")));
                 msg.setStyle(msg.getStyle().withColor(TextColor.fromFormatting(Formatting.WHITE)));
                 server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText("").append(discord).append(msg),false));
             }

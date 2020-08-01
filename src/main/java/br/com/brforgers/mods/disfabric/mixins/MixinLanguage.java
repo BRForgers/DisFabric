@@ -1,0 +1,80 @@
+package br.com.brforgers.mods.disfabric.mixins;
+
+import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonParseException;
+import net.fabricmc.loader.FabricLoader;
+import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
+import net.fabricmc.loader.metadata.EntrypointMetadata;
+import net.fabricmc.loader.metadata.LoaderModMetadata;
+import net.minecraft.util.Language;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+
+@Mixin(Language.class)
+public abstract class MixinLanguage {
+
+    @Shadow @Final private static Logger LOGGER;
+
+    @Shadow public static void load(InputStream inputStream, BiConsumer<String, String> entryConsumer) {}
+
+    @SuppressWarnings("unchecked")
+    @Redirect(method = "create", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;"))
+    private static <K, V> Builder<K, V> immutableBuilder() {
+        Builder<K, V> builder = ImmutableMap.builder();
+        BiConsumer<K, V> biConsumer = builder::put;
+
+        LOGGER.info("DisFabric will now try to load modded language files.");
+        AtomicInteger loadedFiles = new AtomicInteger();
+        FabricLoader loader = FabricLoader.INSTANCE;
+        loader.getAllMods().forEach(modContainer -> {
+            ModMetadata metadata = modContainer.getMetadata();
+            if(metadata instanceof LoaderModMetadata) {
+                Optional<EntrypointMetadata> optional = ((LoaderModMetadata) metadata).getEntrypoints("main").stream().findFirst();
+                if(optional.isPresent()) {
+                    EntrypointMetadata entrypointMetadata = optional.get();
+                    try {
+                        InputStream inputStream = FabricLauncherBase.getClass(entrypointMetadata.getValue()).getResourceAsStream("/assets/"+modContainer.getMetadata().getId()+"/lang/en_us.json");
+                        if(inputStream == null) return;
+                        Throwable var3 = null;
+                        try {
+                            load(inputStream, (BiConsumer<String, String>) biConsumer);
+                            loadedFiles.getAndIncrement();
+                            LOGGER.info("Successfully loaded /assets/"+modContainer.getMetadata().getId()+"/lang/en_us.json");
+                        } catch (Throwable var13) {
+                            var3 = var13;
+                            throw var13;
+                        } finally {
+                            if (var3 != null) {
+                                try {
+                                    inputStream.close();
+                                } catch (Throwable var12) {
+                                    var3.addSuppressed(var12);
+                                }
+                            } else {
+                                inputStream.close();
+                            }
+                        }
+                    } catch (JsonParseException | IOException var15) {
+                        LOGGER.error("Couldn't read strings from /assets/"+modContainer.getMetadata().getId()+"/lang/en_us.json", var15);
+                    } catch (ClassNotFoundException ignored) {}
+                }
+            }
+        });
+        LOGGER.info("DisFabric loaded "+loadedFiles.get()+" modded language files.");
+
+        return builder;
+    }
+
+}

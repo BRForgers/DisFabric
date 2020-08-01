@@ -12,14 +12,18 @@ public class MinecraftEventListener {
     public void init() {
         ServerChatCallback.EVENT.register((playerEntity, rawMessage, message) -> {
             Pair<String, String> convertedPair = Utils.convertMentionsFromNames(rawMessage);
-            JSONObject body = new JSONObject();
-            body.put("username", playerEntity.getEntityName());
-            body.put("avatar_url", "https://mc-heads.net/avatar/" + playerEntity.getEntityName());
-            body.put("content", convertedPair.getLeft());
-            try {
-                Unirest.post(DisFabric.config.webhookURL).header("Content-Type", "application/json").body(body).asJsonAsync();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            if(DisFabric.config.isWebhookEnabled) {
+                JSONObject body = new JSONObject();
+                body.put("username", playerEntity.getEntityName());
+                body.put("avatar_url", "https://mc-heads.net/avatar/" + playerEntity.getEntityName());
+                body.put("content", convertedPair.getLeft());
+                try {
+                    Unirest.post(DisFabric.config.webhookURL).header("Content-Type", "application/json").body(body).asJsonAsync();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }else{
+                DisFabric.textChannel.sendMessage(DisFabric.config.texts.playerMessage.replace("%playername%", playerEntity.getEntityName()).replace("%playermessage%", convertedPair.getLeft())).queue();
             }
             JSONObject newComponent = new JSONObject(LiteralText.Serializer.toJson(message));
             newComponent.getJSONArray("with").put(1, convertedPair.getRight());

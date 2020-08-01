@@ -4,13 +4,38 @@ import br.com.brforgers.mods.disfabric.DisFabric;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.text.Text;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class DiscordCommandOutput implements CommandOutput {
+
+    Thread outputThread = null;
+    StringBuilder outputString = new StringBuilder();
+    long lastOutputMillis = 0;
+
     @Override
     public void sendSystemMessage(Text message, UUID senderUuid) {
-        DisFabric.logger.info(message.getString());
-        DisFabric.textChannel.sendMessage("> " + message.getString()).queue();
+        String messageString = message.getString();
+        DisFabric.logger.info(messageString);
+        long currentOutputMillis = System.currentTimeMillis();
+        if((outputString.length() + messageString.length()) > 2000) {
+            DisFabric.textChannel.sendMessage(outputString).queue();
+            outputString = new StringBuilder();
+        }else{
+            outputString.append("> ").append(messageString).append("\n");
+        }
+        if((currentOutputMillis - lastOutputMillis) > 50) {
+            outputThread = new Thread(() -> new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    DisFabric.textChannel.sendMessage(outputString).queue();
+                    outputString = new StringBuilder();
+                }
+            }, 51));
+            outputThread.start();
+        }
+        lastOutputMillis = currentOutputMillis;
     }
 
     @Override

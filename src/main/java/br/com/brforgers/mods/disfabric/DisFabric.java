@@ -7,6 +7,7 @@ import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -17,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.security.auth.login.LoginException;
-
 
 public class DisFabric implements DedicatedServerModInitializer {
 
@@ -30,7 +30,6 @@ public class DisFabric implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
         AutoConfig.register(Configuration.class, JanksonConfigSerializer::new);
-        logger.info("DisFabric >>>>>>>>>>>>>>>>>>>>>>>>> All others discord integrations mods");
         config = AutoConfig.getConfigHolder(Configuration.class).getConfig();
         try {
             if(config.membersIntents){
@@ -54,6 +53,8 @@ public class DisFabric implements DedicatedServerModInitializer {
             DisFabric.logger.error(ex);
         }
         if(jda != null) {
+            if(!config.botGameStatus.isEmpty())
+                jda.getPresence().setActivity(Activity.playing(config.botGameStatus));
             ServerLifecycleEvents.SERVER_STARTED.register((server) -> textChannel.sendMessage(DisFabric.config.texts.serverStarted).queue());
             ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
                 textChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();

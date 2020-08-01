@@ -44,9 +44,10 @@ public abstract class MixinLanguage {
     @Shadow @Final private static Pattern TOKEN_PATTERN;
 
     @SuppressWarnings("unchecked")
-    @Redirect(method = "create", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;"))
-    private static <K, V> Builder<K, V> immutableBuilder() {
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+    @Redirect(method = "create", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap$Builder;build()Lcom/google/common/collect/ImmutableMap;"))
+    private static <K, V> ImmutableMap<K, V> immutableBuild(Builder<K, V> builder) {
+        ImmutableMap<K, V> immutableMap = builder.build();
+        LinkedHashMap<String, String> map = new LinkedHashMap<>((ImmutableMap<String, String>) immutableMap);
 
         LOGGER.info("DisFabric will now try to load modded language files.");
         AtomicInteger loadedFiles = new AtomicInteger();
@@ -63,12 +64,9 @@ public abstract class MixinLanguage {
                         Throwable var3 = null;
                         try {
                             JsonObject jsonObject = GSON.fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonObject.class);
-                            Iterator<Map.Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
-
-                            while(iterator.hasNext()) {
-                                Map.Entry<String, JsonElement> entry = iterator.next();
+                            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                                 String string = TOKEN_PATTERN.matcher(JsonHelper.asString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
-                                map.putIfAbsent(entry.getKey(), string);
+                                map.put(entry.getKey(), string);
                             }
                             loadedFiles.getAndIncrement();
                             LOGGER.info("Successfully loaded /assets/"+modContainer.getMetadata().getId()+"/lang/en_us.json");
@@ -94,7 +92,7 @@ public abstract class MixinLanguage {
         });
         LOGGER.info("DisFabric loaded "+loadedFiles.get()+" modded language files.");
 
-        return (Builder<K, V>) ImmutableMap.builder().putAll(map);
+        return (ImmutableMap<K, V>) ImmutableMap.builder().putAll(map).build();
     }
 
 }

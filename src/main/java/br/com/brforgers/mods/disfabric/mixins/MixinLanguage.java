@@ -2,12 +2,16 @@ package br.com.brforgers.mods.disfabric.mixins;
 
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.fabricmc.loader.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.fabricmc.loader.metadata.EntrypointMetadata;
 import net.fabricmc.loader.metadata.LoaderModMetadata;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Language;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -18,9 +22,15 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.regex.Pattern;
 
 @Mixin(Language.class)
 public abstract class MixinLanguage {
@@ -29,11 +39,14 @@ public abstract class MixinLanguage {
 
     @Shadow public static void load(InputStream inputStream, BiConsumer<String, String> entryConsumer) {}
 
+    @Shadow @Final private static Gson GSON;
+
+    @Shadow @Final private static Pattern TOKEN_PATTERN;
+
     @SuppressWarnings("unchecked")
     @Redirect(method = "create", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;"))
     private static <K, V> Builder<K, V> immutableBuilder() {
-        Builder<K, V> builder = ImmutableMap.builder();
-        BiConsumer<K, V> biConsumer = builder::put;
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
         LOGGER.info("DisFabric will now try to load modded language files.");
         AtomicInteger loadedFiles = new AtomicInteger();
@@ -49,7 +62,14 @@ public abstract class MixinLanguage {
                         if(inputStream == null) return;
                         Throwable var3 = null;
                         try {
-                            load(inputStream, (BiConsumer<String, String>) biConsumer);
+                            JsonObject jsonObject = GSON.fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonObject.class);
+                            Iterator<Map.Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
+
+                            while(iterator.hasNext()) {
+                                Map.Entry<String, JsonElement> entry = iterator.next();
+                                String string = TOKEN_PATTERN.matcher(JsonHelper.asString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
+                                map.putIfAbsent(entry.getKey(), string);
+                            }
                             loadedFiles.getAndIncrement();
                             LOGGER.info("Successfully loaded /assets/"+modContainer.getMetadata().getId()+"/lang/en_us.json");
                         } catch (Throwable var13) {
@@ -74,7 +94,7 @@ public abstract class MixinLanguage {
         });
         LOGGER.info("DisFabric loaded "+loadedFiles.get()+" modded language files.");
 
-        return builder;
+        return (Builder<K, V>) ImmutableMap.builder().putAll(map);
     }
 
 }

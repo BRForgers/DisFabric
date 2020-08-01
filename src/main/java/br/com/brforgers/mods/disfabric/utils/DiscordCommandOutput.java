@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class DiscordCommandOutput implements CommandOutput {
 
-    Thread outputThread = null;
     StringBuilder outputString = new StringBuilder();
+    Thread outputThread = null;
     long lastOutputMillis = 0;
 
     @Override
@@ -21,7 +21,6 @@ public class DiscordCommandOutput implements CommandOutput {
         long currentOutputMillis = System.currentTimeMillis();
         if((outputString.length() + messageString.length()) > 2000) {
             DisFabric.textChannel.sendMessage(outputString).queue();
-            outputString = new StringBuilder();
         }else{
             outputString.append("> ").append(messageString).append("\n");
         }

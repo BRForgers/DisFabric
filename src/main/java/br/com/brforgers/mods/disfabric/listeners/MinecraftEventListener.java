@@ -4,8 +4,12 @@ import br.com.brforgers.mods.disfabric.DisFabric;
 import br.com.brforgers.mods.disfabric.utils.Utils;
 import br.com.brforgers.mods.disfabric.events.*;
 import br.com.brforgers.mods.disfabric.utils.MarkdownParser;
+
+import java.util.Optional;
+
 import com.mashape.unirest.http.Unirest;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.json.JSONObject;
 
@@ -27,9 +31,14 @@ public class MinecraftEventListener {
             }else{
                 DisFabric.textChannel.sendMessage(DisFabric.config.texts.playerMessage.replace("%playername%", playerEntity.getEntityName()).replace("%playermessage%", convertedPair.getLeft())).queue();
             }
-            JSONObject newComponent = new JSONObject(LiteralText.Serializer.toJson(message));
-            newComponent.getJSONArray("with").put(1, convertedPair.getRight());
-            return LiteralText.Serializer.fromJson(MarkdownParser.parseMarkdown(newComponent.toString()));
+            if (DisFabric.config.modifyChatMessages) {
+                JSONObject newComponent = new JSONObject(Text.Serializer.toJson(message));
+                newComponent.getJSONArray("with").put(1, convertedPair.getRight());
+                String newComponentString = newComponent.toString();
+                String markedDownString = MarkdownParser.parseMarkdown(newComponentString);
+                if (!newComponentString.equals(markedDownString)) return Optional.of(Text.Serializer.fromJson(markedDownString));
+            }
+            return Optional.empty();
         });
 
         PlayerAdvancementCallback.EVENT.register((playerEntity, advancement) -> {

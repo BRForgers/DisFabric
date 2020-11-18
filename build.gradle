@@ -30,8 +30,12 @@ dependencies {
     include(modCompile ("net.dv8tion:JDA:4.2.0_182") {
         exclude module: 'opus-java'
     })
-    include(modApi("me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"))
-    include(modApi("me.shedaniel.cloth:config-2:4.6.0"))
+    include(modApi("me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable")) {
+        exclude group: "net.fabricmc.fabric-api", module: "fabric-api"
+    }
+    include(modApi("me.shedaniel.cloth:config-2:4.6.0")) {
+        exclude group: "net.fabricmc.fabric-api", module: "fabric-api"
+    }
     include(modCompile("com.mashape.unirest:unirest-java:1.4.9"))
     include(modCompile(group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.8.1'))
 

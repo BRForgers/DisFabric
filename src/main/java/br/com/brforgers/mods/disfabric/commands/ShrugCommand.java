@@ -1,11 +1,11 @@
 package br.com.brforgers.mods.disfabric.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.command.arguments.MessageArgumentType;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.command.ServerCommandSource;
 
-import static net.minecraft.command.arguments.MessageArgumentType.getMessage;
+import static net.minecraft.command.argument.MessageArgumentType.getMessage;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 

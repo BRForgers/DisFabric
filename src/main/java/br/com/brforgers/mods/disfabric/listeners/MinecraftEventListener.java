@@ -32,11 +32,11 @@ public class MinecraftEventListener {
                 DisFabric.textChannel.sendMessage(DisFabric.config.texts.playerMessage.replace("%playername%", playerEntity.getEntityName()).replace("%playermessage%", convertedPair.getLeft())).queue();
             }
             if (DisFabric.config.modifyChatMessages) {
-                JSONObject newComponent = new JSONObject(Text.Serializer.toJson(message));
-                newComponent.getJSONArray("with").put(1, convertedPair.getRight());
-                String newComponentString = newComponent.toString();
-                String markedDownString = MarkdownParser.parseMarkdown(newComponentString);
-                if (!newComponentString.equals(markedDownString)) return Optional.of(Text.Serializer.fromJson(markedDownString));
+                String jsonString = Text.Serializer.toJson(message);
+                JSONObject newComponent = new JSONObject(jsonString);
+                newComponent.getJSONArray("with").put(1, MarkdownParser.parseMarkdown(convertedPair.getRight()));
+                Text finalText = Text.Serializer.fromJson(newComponent.toString());
+                return Optional.ofNullable(finalText);
             }
             return Optional.empty();
         });

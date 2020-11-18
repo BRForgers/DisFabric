@@ -32,20 +32,10 @@ public abstract class MixinServerPlayNetworkHandler {
     @Shadow public abstract void disconnect(Text reason);
     @Shadow protected abstract void executeCommand(String input);
 
-//    @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
-//    private void onGameMessage(ChatMessageC2SPacket packet, CallbackInfo ci){
-//        if (this.player.getClientChatVisibility() != ChatVisibility.HIDDEN) {
-//            String string = StringUtils.normalizeSpace(packet.getChatMessage());
-//            if (!string.startsWith("/")) {
-//                this.player.updateLastActionTime();
-//                Text text = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
-//                ServerChatCallback.EVENT.invoker().onServerChat(this.player, string, text);
-//            }
-//        }
-//    }
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "onGameMessage", cancellable = true)
-    private void onGameMessage(ChatMessageC2SPacket packet, CallbackInfo ci) {
-        String message = StringUtils.normalizeSpace(packet.getChatMessage());
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "method_31286", cancellable = true)
+    private void onGameMessage(String string, CallbackInfo ci) {
+        String message = StringUtils.normalizeSpace(string);
         Text text = new TranslatableText("chat.type.text", this.player.getDisplayName(), message);
         Optional<Text> eventResult = ServerChatCallback.EVENT.invoker().onServerChat(this.player, message, text);
         if (eventResult.isPresent()) {

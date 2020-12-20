@@ -6,6 +6,7 @@
   "name": "DisFabric",
   "description": "A barebones Discord <-> Minecraft chat bridge.",
   "authors": [
+    "BRForgers Team",
     "armelin1",
     "D4rkness_King",
     "jonatsp"

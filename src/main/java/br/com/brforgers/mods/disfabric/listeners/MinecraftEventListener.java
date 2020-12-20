@@ -22,7 +22,7 @@ public class MinecraftEventListener {
                 JSONObject body = new JSONObject();
                 body.put("username", playerEntity.getEntityName());
                 body.put("avatar_url", "https://mc-heads.net/avatar/" + playerEntity.getEntityName());
-                body.put("content", convertedPair.getLeft());
+                body.put("content", convertedPair.getLeft().replace("@everyone", "@\u00ADeveryone").replace("@here", "@\u00ADhere"));
                 try {
                     Unirest.post(DisFabric.config.webhookURL).header("Content-Type", "application/json").body(body).asJsonAsync();
                 } catch (Exception ex) {

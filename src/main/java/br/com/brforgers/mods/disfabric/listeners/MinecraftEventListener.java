@@ -11,18 +11,21 @@ import com.mashape.unirest.http.Unirest;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MinecraftEventListener {
     public void init() {
         ServerChatCallback.EVENT.register((playerEntity, rawMessage, message) -> {
-
             Pair<String, String> convertedPair = Utils.convertMentionsFromNames(rawMessage);
             if(DisFabric.config.isWebhookEnabled) {
                 JSONObject body = new JSONObject();
                 body.put("username", playerEntity.getEntityName());
                 body.put("avatar_url", "https://mc-heads.net/avatar/" + playerEntity.getEntityName());
-                body.put("content", convertedPair.getLeft().replace("@everyone", "@\u00ADeveryone").replace("@here", "@\u00ADhere"));
+                JSONObject allowed_mentions = new JSONObject();
+                allowed_mentions.put("parse", new String[]{"users", "roles"});
+                body.put("allowed_mentions", allowed_mentions);
+                body.put("content", convertedPair.getLeft());
                 try {
                     Unirest.post(DisFabric.config.webhookURL).header("Content-Type", "application/json").body(body).asJsonAsync();
                 } catch (Exception ex) {

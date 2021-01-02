@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import okhttp3.OkHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,6 +27,8 @@ public class DisFabric implements DedicatedServerModInitializer {
     public static Configuration config;
     public static JDA jda;
     public static TextChannel textChannel;
+
+    public static boolean stop = false;
 
     @Override
     public void onInitializeServer() {
@@ -57,10 +60,15 @@ public class DisFabric implements DedicatedServerModInitializer {
                 jda.getPresence().setActivity(Activity.playing(config.botGameStatus));
             ServerLifecycleEvents.SERVER_STARTED.register((server) -> textChannel.sendMessage(DisFabric.config.texts.serverStarted).queue());
             ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
+                stop = true;
+                //logger.error(stop);
                 textChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();
                 DisFabric.jda.shutdown();
+                OkHttpClient client = jda.getHttpClient();
+                client.connectionPool().evictAll();
+                client.dispatcher().executorService().shutdown();
             });
-            ServerLifecycleEvents.SERVER_STOPPED.register((server) -> DisFabric.jda.shutdownNow());
+            //ServerLifecycleEvents.SERVER_STOPPED.register((server) -> DisFabric.jda.shutdownNow());
             new MinecraftEventListener().init();
         }
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

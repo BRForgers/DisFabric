@@ -3,6 +3,7 @@ package br.com.brforgers.mods.disfabric;
 import br.com.brforgers.mods.disfabric.commands.ShrugCommand;
 import br.com.brforgers.mods.disfabric.listeners.DiscordEventListener;
 import br.com.brforgers.mods.disfabric.listeners.MinecraftEventListener;
+import com.mashape.unirest.http.Unirest;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
@@ -15,10 +16,12 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
+import java.util.Collections;
 
 public class DisFabric implements DedicatedServerModInitializer {
 
@@ -36,13 +39,17 @@ public class DisFabric implements DedicatedServerModInitializer {
         config = AutoConfig.getConfigHolder(Configuration.class).getConfig();
         try {
             if(config.membersIntents){
-                DisFabric.jda = JDABuilder.createDefault(config.botToken)
+                DisFabric.jda = JDABuilder.createDefault(config.botToken).setHttpClient(new OkHttpClient.Builder()
+                        .protocols(Collections.singletonList(Protocol.HTTP_1_1))
+                        .build())
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .addEventListeners(new DiscordEventListener())
                     .build();
             } else {
-                DisFabric.jda = JDABuilder.createDefault(config.botToken)
+                DisFabric.jda = JDABuilder.createDefault(config.botToken).setHttpClient(new OkHttpClient.Builder()
+                        .protocols(Collections.singletonList(Protocol.HTTP_1_1))
+                        .build())
                     .addEventListeners(new DiscordEventListener())
                     .build();
             }
@@ -63,10 +70,22 @@ public class DisFabric implements DedicatedServerModInitializer {
                 stop = true;
                 //logger.error(stop);
                 textChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Unirest.shutdown();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 DisFabric.jda.shutdown();
-                OkHttpClient client = jda.getHttpClient();
-                client.connectionPool().evictAll();
-                client.dispatcher().executorService().shutdown();
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             });
             //ServerLifecycleEvents.SERVER_STOPPED.register((server) -> DisFabric.jda.shutdownNow());
             new MinecraftEventListener().init();

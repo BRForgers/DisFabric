@@ -27,7 +27,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    include(modCompile ("net.dv8tion:JDA:4.2.0_182") {
+    include(modCompile ("net.dv8tion:JDA:4.2.0_246") {
         exclude module: 'opus-java'
     })
     include(modApi("me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable")) {

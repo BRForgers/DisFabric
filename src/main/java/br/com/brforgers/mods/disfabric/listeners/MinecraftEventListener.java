@@ -22,7 +22,7 @@ public class MinecraftEventListener {
                 if (DisFabric.config.isWebhookEnabled) {
                     JSONObject body = new JSONObject();
                     body.put("username", playerEntity.getEntityName());
-                    body.put("avatar_url", "https://mc-heads.net/avatar/" + playerEntity.getEntityName());
+                    body.put("avatar_url", "https://mc-heads.net/avatar/" + playerEntity.getUuidAsString());
                     JSONObject allowed_mentions = new JSONObject();
                     allowed_mentions.put("parse", new String[]{"users", "roles"});
                     body.put("allowed_mentions", allowed_mentions);

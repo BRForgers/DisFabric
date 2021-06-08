@@ -12,7 +12,7 @@ jobs:
       with:
         java-version: '16' # The OpenJDK version to make available on the path
         architecture: 'x64' # defaults to 'x64'
-      run: |
+    - run: |
           chmod +x ./gradlew
           chmod +x ./curse_upload
           ./gradlew build

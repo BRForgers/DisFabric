@@ -9,7 +9,7 @@ FILE_LOCATION=`echo "./build/libs/$FILE_NAME"`
 CHANGE_LOG=`git log -1 --pretty=format:"%B"`
 
 #See https://github.com/curseforge/api for how to retrieve game version numbers
-JSON=`printf '{"changelog": "%s", "gameVersions": [7499,7892,8010,8056,8134,8203], "releaseType": "release"}' "$CHANGE_LOG"`
+JSON=`printf '{"changelog": "%s", "gameVersions": [7499,8152], "releaseType": "release"}' "$CHANGE_LOG"`
 
 echo "Uploading $FILE_NAME to Curse Forge..."
 echo

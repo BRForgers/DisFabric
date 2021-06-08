@@ -27,6 +27,10 @@ public class Configuration implements ConfigData {
     @ConfigEntry.Category(value = "Discord")
     public String webhookURL = "";
 
+    @Comment(value = "Use UUID instead nickname to request player head on webhook")
+    @ConfigEntry.Category(value = "Discord")
+    public Boolean useUUIDInsteadNickname = true;
+
     @Comment(value = "Admins ids in Discord; see https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-\nIf more than one, enclose each id in quotation marks separated by commas, like this:\n\"adminsIds\": [ \n" +
             "\t\t\"000\",\n" +
             "\t\t\"111\",\n" +
@@ -138,6 +142,14 @@ public class Configuration implements ConfigData {
                 "%message% | The message")
         @ConfigEntry.Category(value = "Texts")
         public String colorlessText = "<%discordname%> %message%";
+
+        @Comment(value = "Replaces the § symbol with & in any discord message to avoid formatted messages")
+        @ConfigEntry.Category(value = "Texts")
+        public Boolean removeVanillaFormattingFromDiscord = false;
+
+        @Comment(value = "Removes line break from any discord message to avoid spam")
+        @ConfigEntry.Category(value = "Texts")
+        public Boolean removeLineBreakFromDiscord = false;
 
     }
 }

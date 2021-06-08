@@ -8,10 +8,8 @@ import br.com.brforgers.mods.disfabric.utils.MarkdownParser;
 import java.util.Optional;
 
 import com.mashape.unirest.http.Unirest;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MinecraftEventListener {
@@ -22,7 +20,7 @@ public class MinecraftEventListener {
                 if (DisFabric.config.isWebhookEnabled) {
                     JSONObject body = new JSONObject();
                     body.put("username", playerEntity.getEntityName());
-                    body.put("avatar_url", "https://mc-heads.net/avatar/" + playerEntity.getEntityName());
+                    body.put("avatar_url", "https://mc-heads.net/avatar/" + (DisFabric.config.useUUIDInsteadNickname ? playerEntity.getUuid() : playerEntity.getEntityName()));
                     JSONObject allowed_mentions = new JSONObject();
                     allowed_mentions.put("parse", new String[]{"users", "roles"});
                     body.put("allowed_mentions", allowed_mentions);

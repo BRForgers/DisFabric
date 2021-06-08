@@ -43,20 +43,20 @@ dependencies {
         exclude group: "net.fabricmc.fabric-api", module: "fabric-api"
     }
     include(modImplementation ("com.mashape.unirest:unirest-java:1.4.9"))
-    include(modImplementation (group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.8.1'))
+    //include(modImplementation (group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.9.1'))
 
     include group: 'org.json', name: 'json', version: '20160212'
     include group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.2'
     include group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.1'
     include group: 'org.apache.httpcomponents', name: 'httpcore-nio', version: '4.4.4'
     include group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.4'
-    include group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.1'
+    include group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
     include "com.fasterxml.jackson.core:jackson-databind:2.10.1"
     include "net.sf.trove4j:trove4j:3.0.3"
     include "org.apache.commons:commons-collections4:4.1"
     include "com.google.code.findbugs:jsr305:3.0.2"
     include "org.jetbrains:annotations:16.0.1"
-    include "org.slf4j:slf4j-api:1.7.25"
+    //include "org.slf4j:slf4j-api:1.7.25"
     include "com.neovisionaries:nv-websocket-client:2.10"
     include "com.squareup.okhttp3:okhttp:3.13.0"
     include "commons-logging:commons-logging:1.2"

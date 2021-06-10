@@ -3,7 +3,7 @@ package br.com.brforgers.mods.disfabric;
 import br.com.brforgers.mods.disfabric.commands.ShrugCommand;
 import br.com.brforgers.mods.disfabric.listeners.DiscordEventListener;
 import br.com.brforgers.mods.disfabric.listeners.MinecraftEventListener;
-import com.mashape.unirest.http.Unirest;
+import kong.unirest.Unirest;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
@@ -20,7 +20,6 @@ import okhttp3.Protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
 import java.util.Collections;
 
 public class DisFabric implements DedicatedServerModInitializer {
@@ -75,11 +74,7 @@ public class DisFabric implements DedicatedServerModInitializer {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                try {
-                    Unirest.shutdown();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Unirest.shutDown();
                 DisFabric.jda.shutdown();
                 try {
                     Thread.sleep(250);

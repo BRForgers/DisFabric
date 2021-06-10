@@ -7,10 +7,10 @@ import br.com.brforgers.mods.disfabric.utils.MarkdownParser;
 
 import java.util.Optional;
 
-import com.mashape.unirest.http.Unirest;
+import kong.unirest.Unirest;
+import kong.unirest.json.JSONObject;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
-import org.json.JSONObject;
 
 public class MinecraftEventListener {
     public void init() {

@@ -1,6 +1,5 @@
 package br.com.brforgers.mods.disfabric.listeners;
 
-import br.com.brforgers.mods.disfabric.Configuration;
 import br.com.brforgers.mods.disfabric.DisFabric;
 import br.com.brforgers.mods.disfabric.utils.DiscordCommandOutput;
 import br.com.brforgers.mods.disfabric.utils.MarkdownParser;
@@ -56,10 +55,14 @@ public class DiscordEventListener extends ListenerAdapter {
                 e.getChannel().sendMessage(tpss.toString()).queue();
 
             } else if(e.getMessage().getContentRaw().startsWith("!help")){
-                String help = "```\n" + "=============== Commands ===============\n" +
-                        "\n" + "!online: list server online players" +
-                        "\n" + "!tps: shows loaded dimensions tps´s" +
-                        "\n" + "!console <command>: executes commands in the server console (admins only)\n```";
+                String help = """
+                        ```
+                        =============== Commands ===============
+
+                        !online: list server online players
+                        !tps: shows loaded dimensions tps´s
+                        !console <command>: executes commands in the server console (admins only)
+                        ```""";
                 e.getChannel().sendMessage(help).queue();
 
             } else {

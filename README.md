@@ -1,5 +1,7 @@
 # DisFabric
 
+[![](http://cf.way2muchnoise.eu/short_disfabric_downloads.svg) ![](https://cf.way2muchnoise.eu/versions/disfabric.svg)](https://www.curseforge.com/minecraft/mc-mods/disfabric) 
+
 #### Fabric <> Discord bridge
 
 ### Features:

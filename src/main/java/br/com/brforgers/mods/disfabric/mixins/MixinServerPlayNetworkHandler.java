@@ -38,7 +38,7 @@ public abstract class MixinServerPlayNetworkHandler {
         Text text = new TranslatableText("chat.type.text", this.player.getDisplayName(), msg);
         Optional<Text> eventResult = ServerChatCallback.EVENT.invoker().onServerChat(this.player, msg, text);
         if (eventResult.isPresent()) {
-            this.server.getPlayerManager().broadcastChatMessage(eventResult.get(), MessageType.CHAT, this.player.getUuid());
+            this.server.getPlayerManager().broadcast(eventResult.get(), MessageType.CHAT, this.player.getUuid());
             ci.cancel();
         }
     }

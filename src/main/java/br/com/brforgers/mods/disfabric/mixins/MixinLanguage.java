@@ -54,7 +54,7 @@ public abstract class MixinLanguage {
         loader.getAllMods().forEach(modContainer -> {
             ModMetadata metadata = modContainer.getMetadata();
             if(metadata instanceof LoaderModMetadata) {
-                Optional<EntrypointMetadata> optional = ((LoaderModMetadata) metadata).getEntrypoints("main").stream().findFirst();
+                Optional<? extends EntrypointMetadata> optional = ((LoaderModMetadata) metadata).getEntrypoints("main").stream().findFirst();
                 if(optional.isPresent()) {
                     EntrypointMetadata entrypointMetadata = optional.get();
                     try {

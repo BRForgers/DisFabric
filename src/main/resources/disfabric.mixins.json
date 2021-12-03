@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "br.com.brforgers.mods.disfabric.mixins",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "MixinLanguage",
     "MixinPlayerAdvancementTracker",

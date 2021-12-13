@@ -1,4 +1,6 @@
 # DisFabric
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBRForgers%2FDisFabric.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FBRForgers%2FDisFabric?ref=badge_shield)
+
 
 [![](http://cf.way2muchnoise.eu/short_disfabric_downloads.svg) ![](https://cf.way2muchnoise.eu/versions/disfabric.svg)](https://www.curseforge.com/minecraft/mc-mods/disfabric) 
 
@@ -14,3 +16,7 @@
 + Sends commands to server by Discord
 + Markdown support in game
 + ¯\\\_(ツ)\_/¯
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FBRForgers%2FDisFabric.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FBRForgers%2FDisFabric?ref=badge_large)

@@ -6,6 +6,9 @@ import br.com.brforgers.mods.disfabric.utils.MarkdownParser;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -64,7 +67,28 @@ public class DiscordEventListener extends ListenerAdapter {
                         !console <command>: executes commands in the server console (admins only)
                         ```""";
                 e.getChannel().sendMessage(help).queue();
+            } else if (e.getMessage().getContentRaw().startsWith("!scoreboard")) {
+                String objName = e.getMessage().getContentRaw().replace("!scoreboard ", "");
+                ServerScoreboard scoreboard = server.getScoreboard();
+                ScoreboardObjective objective = scoreboard.getObjective(objName);
+                if (objective == null) {
+                    e.getChannel().sendMessage("Scoreboard not found.").queue();
+                    return;
+                }
 
+                String message = "```\n=============== " + objName + " ===============\n";
+                
+                for (ScoreboardPlayerScore sps : scoreboard.getAllPlayerScores(objective)) {
+                    message += (
+                        sps.getPlayerName()
+                        + ": "
+                        + sps.getScore()
+                        + "\n"
+                    );
+                }
+                message += "\n```";
+
+                e.getChannel().sendMessage(message).queue();
             } else {
                 LiteralText discord = new LiteralText(DisFabric.config.texts.coloredText.replace("%discordname%", Objects.requireNonNull(e.getMember()).getEffectiveName()).replace("%message%",e.getMessage().getContentDisplay().replace("§", DisFabric.config.texts.removeVanillaFormattingFromDiscord ? "&" : "§").replace("\n", DisFabric.config.texts.removeLineBreakFromDiscord ? " " : "\n") + ((e.getMessage().getAttachments().size() > 0) ? " <att>" : "") + ((e.getMessage().getEmbeds().size() > 0) ? " <embed>" : "")));
                 discord.setStyle(discord.getStyle().withColor(TextColor.fromRgb(Objects.requireNonNull(e.getMember()).getColorRaw())));

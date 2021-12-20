@@ -65,6 +65,7 @@ public class DiscordEventListener extends ListenerAdapter {
                         !online: list server online players
                         !tps: shows loaded dimensions tps´s
                         !console <command>: executes commands in the server console (admins only)
+                        !scoreboard <objective>: displays the scoreboard for an objective
                         ```""";
                 e.getChannel().sendMessage(help).queue();
             } else if (e.getMessage().getContentRaw().startsWith("!scoreboard")) {

@@ -15,7 +15,7 @@ public class DiscordCommandOutput implements CommandOutput {
     long lastOutputMillis = 0;
 
     @Override
-    public void sendSystemMessage(Text message, UUID senderUuid) {
+    public void sendMessage(Text message) {
         String messageString = message.getString();
         DisFabric.logger.info(messageString);
         long currentOutputMillis = System.currentTimeMillis();

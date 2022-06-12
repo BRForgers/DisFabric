@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -85,8 +85,8 @@ public class DisFabric implements DedicatedServerModInitializer {
             //ServerLifecycleEvents.SERVER_STOPPED.register((server) -> DisFabric.jda.shutdownNow());
             new MinecraftEventListener().init();
         }
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-            if (dedicated) {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            if (environment.dedicated) {
                 ShrugCommand.register(dispatcher);
             }
         });

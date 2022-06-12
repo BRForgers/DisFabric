@@ -1,16 +1,21 @@
 package br.com.brforgers.mods.disfabric.mixins;
 
 import br.com.brforgers.mods.disfabric.events.ServerChatCallback;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.network.Packet;
+import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.server.filter.TextStream.Message;
+//import net.minecraft.text.TranslatableText;
+//import net.minecraft.server.filter.TextStream.Message;
 import java.util.Optional;
 
+import net.minecraft.text.TranslatableTextContent;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,20 +30,14 @@ public abstract class MixinServerPlayNetworkHandler {
     @Final
     @Shadow private MinecraftServer server;
     @Shadow public ServerPlayerEntity player;
-    @Shadow private int messageCooldown;
-    @Shadow public abstract void sendPacket(Packet<?> packet);
-    @Shadow public abstract void disconnect(Text reason);
-    @Shadow protected abstract void executeCommand(String input);
 
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Ljava/util/function/Function;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), method = "handleMessage", cancellable = true)
-    private void handleMessage(Message message, CallbackInfo ci) {
-        String string = message.getRaw();
+    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/server/PlayerManager.broadcast (Lnet/minecraft/server/filter/FilteredMessage;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/util/registry/RegistryKey;)V"), method = "handleDecoratedMessage", cancellable = true)
+    private void handleMessage(FilteredMessage<SignedMessage> message, CallbackInfo ci) {
+        String string = message.raw().getContent().getString();
         String msg = StringUtils.normalizeSpace(string);
-        Text text = new TranslatableText("chat.type.text", this.player.getDisplayName(), msg);
-        Optional<Text> eventResult = ServerChatCallback.EVENT.invoker().onServerChat(this.player, msg, text);
+        Optional<Text> eventResult = ServerChatCallback.EVENT.invoker().onServerChat(this.player, msg);
         if (eventResult.isPresent()) {
-            this.server.getPlayerManager().broadcast(eventResult.get(), MessageType.CHAT, this.player.getUuid());
+            this.server.getPlayerManager().broadcast(FilteredMessage.permitted(SignedMessage.of(eventResult.get())), this.player, MessageType.CHAT);
             ci.cancel();
         }
     }

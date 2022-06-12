@@ -8,14 +8,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 public interface ServerChatCallback {
-    Event<ServerChatCallback> EVENT = EventFactory.createArrayBacked(ServerChatCallback.class, callbacks -> (playerEntity, rawMessage, message) -> {
+    Event<ServerChatCallback> EVENT = EventFactory.createArrayBacked(ServerChatCallback.class, callbacks -> (playerEntity, rawMessage) -> {
         Optional<Text> msg = Optional.empty();
         for (ServerChatCallback callback : callbacks) {
-            Optional<Text> callbackResult = callback.onServerChat(playerEntity, rawMessage, message);
+            Optional<Text> callbackResult = callback.onServerChat(playerEntity, rawMessage);
             if (callbackResult.isPresent()) msg = callbackResult;
         }
         return msg;
     });
 
-    Optional<Text> onServerChat(ServerPlayerEntity playerEntity, String rawMessage, Text message);
+    Optional<Text> onServerChat(ServerPlayerEntity playerEntity, String rawMessage);
 }

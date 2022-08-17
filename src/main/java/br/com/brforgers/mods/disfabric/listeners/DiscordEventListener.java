@@ -19,6 +19,8 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.brigadier.ParseResults;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +32,11 @@ public class DiscordEventListener extends ListenerAdapter {
         if(e.getAuthor() != e.getJDA().getSelfUser() && !e.getAuthor().isBot() && e.getChannel().getId().equals(DisFabric.config.channelId) && server != null) {
             if(e.getMessage().getContentRaw().startsWith("!console") && Arrays.asList(DisFabric.config.adminsIds).contains(e.getAuthor().getId())) {
                 String command = e.getMessage().getContentRaw().replace("!console ", "");
-                server.getCommandManager().execute(getDiscordCommandSource(), command);
+
+                ServerCommandSource source = getDiscordCommandSource();
+                ParseResults<ServerCommandSource> results = server.getCommandManager().getDispatcher().parse(command, source);
+
+                server.getCommandManager().execute(results, command);
 
             } else if(e.getMessage().getContentRaw().startsWith("!online")) {
                 List<ServerPlayerEntity> onlinePlayers = server.getPlayerManager().getPlayerList();

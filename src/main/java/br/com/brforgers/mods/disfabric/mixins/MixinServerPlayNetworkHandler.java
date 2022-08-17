@@ -1,12 +1,12 @@
 package br.com.brforgers.mods.disfabric.mixins;
 
 import br.com.brforgers.mods.disfabric.events.ServerChatCallback;
+import net.minecraft.network.message.DecoratedContents;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -31,13 +31,13 @@ public abstract class MixinServerPlayNetworkHandler {
     @Shadow private MinecraftServer server;
     @Shadow public ServerPlayerEntity player;
 
-    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/server/PlayerManager.broadcast (Lnet/minecraft/server/filter/FilteredMessage;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/util/registry/RegistryKey;)V"), method = "handleDecoratedMessage", cancellable = true)
-    private void handleMessage(FilteredMessage<SignedMessage> message, CallbackInfo ci) {
-        String string = message.raw().getContent().getString();
+    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/server/PlayerManager.broadcast (Lnet/minecraft/network/message/SignedMessage;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/network/message/MessageType$Parameters;)V"), method = "handleDecoratedMessage", cancellable = true)
+    private void handleMessage(SignedMessage message, CallbackInfo ci) {
+        String string = message.getContent().getString();
         String msg = StringUtils.normalizeSpace(string);
         Optional<Text> eventResult = ServerChatCallback.EVENT.invoker().onServerChat(this.player, msg);
         if (eventResult.isPresent()) {
-            this.server.getPlayerManager().broadcast(FilteredMessage.permitted(SignedMessage.of(eventResult.get())), this.player, MessageType.CHAT);
+            this.server.getPlayerManager().broadcast(SignedMessage.ofUnsigned(new DecoratedContents(msg, eventResult.get())), this.player, MessageType.params(MessageType.CHAT, this.player));
             ci.cancel();
         }
     }

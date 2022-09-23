@@ -29,10 +29,19 @@ public class Utils {
         int x = 0;
         while(matcher.find()) {
             Member member = null;
-            for (Member m : DisFabric.textChannel.getMembers()) {
-                String name = matcher.group().substring(1);
-                if (m.getUser().getName().toLowerCase().equals(name.toLowerCase()) || (m.getNickname() != null && m.getNickname().toLowerCase().equals(name.toLowerCase()))) {
-                    member = m;
+            if (DisFabric.threadChannel != null) {
+                for (Member m : DisFabric.threadChannel.getMembers()) {
+                    String name = matcher.group().substring(1);
+                    if (m.getUser().getName().toLowerCase().equals(name.toLowerCase()) || (m.getNickname() != null && m.getNickname().toLowerCase().equals(name.toLowerCase()))) {
+                        member = m;
+                    }
+                }
+            } else {
+                for (Member m : DisFabric.textChannel.getMembers()) {
+                    String name = matcher.group().substring(1);
+                    if (m.getUser().getName().toLowerCase().equals(name.toLowerCase()) || (m.getNickname() != null && m.getNickname().toLowerCase().equals(name.toLowerCase()))) {
+                        member = m;
+                    }
                 }
             }
             if (member == null) {

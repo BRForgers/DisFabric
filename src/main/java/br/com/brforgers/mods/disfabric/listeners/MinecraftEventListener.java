@@ -92,7 +92,11 @@ public class MinecraftEventListener {
                         ex.printStackTrace();
                     }
                 } else {
-                    DisFabric.textChannel.sendMessage(DisFabric.config.texts.playerMessage.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%playermessage%", convertedPair.getLeft())).queue();
+                    if (DisFabric.threadChannel != null) {
+                        DisFabric.threadChannel.sendMessage(DisFabric.config.texts.playerMessage.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%playermessage%", convertedPair.getLeft())).queue();
+                    } else {
+                        DisFabric.textChannel.sendMessage(DisFabric.config.texts.playerMessage.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%playermessage%", convertedPair.getLeft())).queue();
+                    }                  
                 }
                 if (DisFabric.config.modifyChatMessages) {
                     JSONObject newComponent = new JSONObject();
@@ -105,7 +109,13 @@ public class MinecraftEventListener {
         });
 
         PlayerAdvancementCallback.EVENT.register((playerEntity, advancement) -> {
-            if(DisFabric.config.announceAdvancements && advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat() && playerEntity.getAdvancementTracker().getProgress(advancement).isDone() && !DisFabric.stop) {
+            if(DisFabric.config.announceAdvancements && advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat() && playerEntity.getAdvancementTracker().getProgress(advancement).isDone() && !DisFabric.stop && DisFabric.threadChannel != null) {
+                switch (advancement.getDisplay().getFrame()) {
+                    case GOAL -> DisFabric.threadChannel.sendMessage(DisFabric.config.texts.advancementGoal.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%advancement%", MarkdownSanitizer.escape(advancement.getDisplay().getTitle().getString()))).queue();
+                    case TASK -> DisFabric.threadChannel.sendMessage(DisFabric.config.texts.advancementTask.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%advancement%", MarkdownSanitizer.escape(advancement.getDisplay().getTitle().getString()))).queue();
+                    case CHALLENGE -> DisFabric.threadChannel.sendMessage(DisFabric.config.texts.advancementChallenge.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%advancement%", MarkdownSanitizer.escape(advancement.getDisplay().getTitle().getString()))).queue();
+                }
+            } else if(DisFabric.config.announceAdvancements && advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat() && playerEntity.getAdvancementTracker().getProgress(advancement).isDone() && !DisFabric.stop && DisFabric.textChannel != null) {
                 switch (advancement.getDisplay().getFrame()) {
                     case GOAL -> DisFabric.textChannel.sendMessage(DisFabric.config.texts.advancementGoal.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%advancement%", MarkdownSanitizer.escape(advancement.getDisplay().getTitle().getString()))).queue();
                     case TASK -> DisFabric.textChannel.sendMessage(DisFabric.config.texts.advancementTask.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName())).replace("%advancement%", MarkdownSanitizer.escape(advancement.getDisplay().getTitle().getString()))).queue();
@@ -115,19 +125,25 @@ public class MinecraftEventListener {
         });
 
         PlayerDeathCallback.EVENT.register((playerEntity, damageSource) -> {
-            if(DisFabric.config.announceDeaths && !DisFabric.stop){
+            if(DisFabric.config.announceDeaths && !DisFabric.stop && DisFabric.threadChannel != null){
+                DisFabric.threadChannel.sendMessage(DisFabric.config.texts.deathMessage.replace("%deathmessage%",MarkdownSanitizer.escape(damageSource.getDeathMessage(playerEntity).getString())).replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName()))).queue();
+            } else if(DisFabric.config.announceDeaths && !DisFabric.stop && DisFabric.textChannel != null){
                 DisFabric.textChannel.sendMessage(DisFabric.config.texts.deathMessage.replace("%deathmessage%",MarkdownSanitizer.escape(damageSource.getDeathMessage(playerEntity).getString())).replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName()))).queue();
             }
         });
 
         PlayerJoinCallback.EVENT.register((connection, playerEntity) -> {
-            if(DisFabric.config.announcePlayers && !DisFabric.stop){
+            if(DisFabric.config.announcePlayers && !DisFabric.stop && DisFabric.threadChannel != null){
+                DisFabric.threadChannel.sendMessage(DisFabric.config.texts.joinServer.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName()))).queue();
+            } else if(DisFabric.config.announcePlayers && !DisFabric.stop && DisFabric.textChannel != null){
                 DisFabric.textChannel.sendMessage(DisFabric.config.texts.joinServer.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName()))).queue();
             }
         });
 
         PlayerLeaveCallback.EVENT.register((playerEntity) -> {
-            if(DisFabric.config.announcePlayers && !DisFabric.stop){
+            if(DisFabric.config.announcePlayers && !DisFabric.stop && DisFabric.threadChannel != null){
+                DisFabric.threadChannel.sendMessage(DisFabric.config.texts.leftServer.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName()))).queue();
+            } else if(DisFabric.config.announcePlayers && !DisFabric.stop && DisFabric.textChannel != null){
                 DisFabric.textChannel.sendMessage(DisFabric.config.texts.leftServer.replace("%playername%", MarkdownSanitizer.escape(playerEntity.getEntityName()))).queue();
             }
         });

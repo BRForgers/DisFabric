@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -29,6 +30,7 @@ public class DisFabric implements DedicatedServerModInitializer {
     public static Configuration config;
     public static JDA jda;
     public static TextChannel textChannel;
+    public static ThreadChannel threadChannel;
 
     public static boolean stop = false;
 
@@ -54,6 +56,7 @@ public class DisFabric implements DedicatedServerModInitializer {
             }
             DisFabric.jda.awaitReady();
             DisFabric.textChannel = DisFabric.jda.getTextChannelById(config.channelId);
+            DisFabric.threadChannel = DisFabric.jda.getThreadChannelById(config.channelId);
         } catch (LoginException ex) {
             jda = null;
             DisFabric.logger.error("Unable to login!", ex);
@@ -64,11 +67,19 @@ public class DisFabric implements DedicatedServerModInitializer {
         if(jda != null) {
             if(!config.botGameStatus.isEmpty())
                 jda.getPresence().setActivity(Activity.playing(config.botGameStatus));
-            ServerLifecycleEvents.SERVER_STARTED.register((server) -> textChannel.sendMessage(DisFabric.config.texts.serverStarted).queue());
+            if(threadChannel != null) {
+                ServerLifecycleEvents.SERVER_STARTED.register((server) -> threadChannel.sendMessage(DisFabric.config.texts.serverStarted).queue());
+            } else {
+                ServerLifecycleEvents.SERVER_STARTED.register((server) -> textChannel.sendMessage(DisFabric.config.texts.serverStarted).queue());
+            }
             ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
                 stop = true;
                 //logger.error(stop);
-                textChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();
+                if(threadChannel != null) {
+                    threadChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();
+                } else {
+                    textChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();
+                }
                 try {
                     Thread.sleep(250);
                 } catch (InterruptedException e) {

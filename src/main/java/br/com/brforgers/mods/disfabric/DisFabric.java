@@ -9,7 +9,8 @@ import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -19,7 +20,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javax.security.auth.login.LoginException;
 import java.util.Collections;
 
 public class DisFabric implements DedicatedServerModInitializer {
@@ -28,8 +28,7 @@ public class DisFabric implements DedicatedServerModInitializer {
     public static Logger logger = LogManager.getLogger(MOD_ID);
     public static Configuration config;
     public static JDA jda;
-    public static TextChannel textChannel;
-
+    public static GuildMessageChannel textChannel;
     public static boolean stop = false;
 
     @Override
@@ -37,24 +36,18 @@ public class DisFabric implements DedicatedServerModInitializer {
         AutoConfig.register(Configuration.class, JanksonConfigSerializer::new);
         config = AutoConfig.getConfigHolder(Configuration.class).getConfig();
         try {
+            JDABuilder jdaBuilder = JDABuilder.createDefault(config.botToken).setHttpClient(new OkHttpClient.Builder()
+                            .protocols(Collections.singletonList(Protocol.HTTP_1_1))
+                            .build())
+                    .addEventListeners(new DiscordEventListener())
+                    .enableIntents(GatewayIntent.MESSAGE_CONTENT);
             if(config.membersIntents){
-                DisFabric.jda = JDABuilder.createDefault(config.botToken).setHttpClient(new OkHttpClient.Builder()
-                        .protocols(Collections.singletonList(Protocol.HTTP_1_1))
-                        .build())
-                    .setMemberCachePolicy(MemberCachePolicy.ALL)
-                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
-                    .addEventListeners(new DiscordEventListener())
-                    .build();
-            } else {
-                DisFabric.jda = JDABuilder.createDefault(config.botToken).setHttpClient(new OkHttpClient.Builder()
-                        .protocols(Collections.singletonList(Protocol.HTTP_1_1))
-                        .build())
-                    .addEventListeners(new DiscordEventListener())
-                    .build();
+                jdaBuilder.enableIntents(GatewayIntent.GUILD_MEMBERS).setMemberCachePolicy(MemberCachePolicy.ALL);
             }
+            DisFabric.jda = jdaBuilder.build();
             DisFabric.jda.awaitReady();
-            DisFabric.textChannel = DisFabric.jda.getTextChannelById(config.channelId);
-        } catch (LoginException ex) {
+            DisFabric.textChannel = (GuildMessageChannel) DisFabric.jda.getGuildChannelById(config.channelId);
+        } catch (InvalidTokenException ex) {
             jda = null;
             DisFabric.logger.error("Unable to login!", ex);
         } catch (InterruptedException ex) {

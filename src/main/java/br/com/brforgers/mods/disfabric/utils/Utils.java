@@ -29,9 +29,9 @@ public class Utils {
         int x = 0;
         while(matcher.find()) {
             Member member = null;
-            for (Member m : DisFabric.textChannel.getMembers()) {
+            for (Member m : DisFabric.textChannel.getGuild().getMemberCache()) {
                 String name = matcher.group().substring(1);
-                if (m.getUser().getName().toLowerCase().equals(name.toLowerCase()) || (m.getNickname() != null && m.getNickname().toLowerCase().equals(name.toLowerCase()))) {
+                if (m.getUser().getName().equalsIgnoreCase(name) || (m.getNickname() != null && m.getNickname().equalsIgnoreCase(name))) {
                     member = m;
                 }
             }

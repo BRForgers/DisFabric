@@ -1,7 +1,6 @@
 package br.com.brforgers.mods.disfabric.mixins;
 
 import br.com.brforgers.mods.disfabric.events.ServerChatCallback;
-import net.minecraft.network.message.DecoratedContents;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.message.SignedMessage;
@@ -37,7 +36,7 @@ public abstract class MixinServerPlayNetworkHandler {
         String msg = StringUtils.normalizeSpace(string);
         Optional<Text> eventResult = ServerChatCallback.EVENT.invoker().onServerChat(this.player, msg);
         if (eventResult.isPresent()) {
-            this.server.getPlayerManager().broadcast(SignedMessage.ofUnsigned(new DecoratedContents(msg, eventResult.get())), this.player, MessageType.params(MessageType.CHAT, this.player));
+            this.server.getPlayerManager().broadcast(message.withUnsignedContent(eventResult.get()), this.player, MessageType.params(MessageType.CHAT, this.player));
             ci.cancel();
         }
     }

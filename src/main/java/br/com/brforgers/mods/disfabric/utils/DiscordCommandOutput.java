@@ -6,7 +6,6 @@ import net.minecraft.text.Text;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 public class DiscordCommandOutput implements CommandOutput {
 

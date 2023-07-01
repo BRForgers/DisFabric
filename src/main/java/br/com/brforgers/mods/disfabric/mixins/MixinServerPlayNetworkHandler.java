@@ -2,19 +2,13 @@ package br.com.brforgers.mods.disfabric.mixins;
 
 import br.com.brforgers.mods.disfabric.events.ServerChatCallback;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.Packet;
 import net.minecraft.network.message.SignedMessage;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-//import net.minecraft.text.TranslatableText;
-//import net.minecraft.server.filter.TextStream.Message;
 import java.util.Optional;
 
-import net.minecraft.text.TranslatableTextContent;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

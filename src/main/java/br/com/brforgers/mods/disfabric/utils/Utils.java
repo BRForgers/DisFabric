@@ -50,4 +50,14 @@ public class Utils {
         }
         return new Pair<>(discordString.toString(), mcString.toString());
     }
+
+    public static double average(long[] values) {
+        long l = 0L;
+
+        for (long m : values) {
+            l += m;
+        }
+
+        return (double)l / (double)values.length;
+    }
 }

@@ -60,7 +60,6 @@ public class DisFabric implements DedicatedServerModInitializer {
             ServerLifecycleEvents.SERVER_STARTED.register((server) -> textChannel.sendMessage(DisFabric.config.texts.serverStarted).queue());
             ServerLifecycleEvents.SERVER_STOPPING.register((server) -> {
                 stop = true;
-                //logger.error(stop);
                 textChannel.sendMessage(DisFabric.config.texts.serverStopped).queue();
                 try {
                     Thread.sleep(250);
@@ -75,7 +74,6 @@ public class DisFabric implements DedicatedServerModInitializer {
                     e.printStackTrace();
                 }
             });
-            //ServerLifecycleEvents.SERVER_STOPPED.register((server) -> DisFabric.jda.shutdownNow());
             new MinecraftEventListener().init();
         }
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
